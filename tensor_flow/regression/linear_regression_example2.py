@@ -2,7 +2,7 @@
 """
 对一个学习算法来说，最重要的有四个要素：
 - 数据（训练数据和测试数据）
-- 模型（预测或分类）
+- 模型（用于预测或分类）
 - 代价函数（评价当前参数的效果，对其求导可以计算梯度）
 - 优化器（优化代价函数的参数，执行梯度下降）
 Beter, 20170628
@@ -88,7 +88,7 @@ def train_theta_by_autodiff(X, y):
         print('Best theta is', best_theta)
 # train_theta_by_autodiff(X, y)
 
-# 方法4：使用优化器法训练参数（Optimizer）
+# 方法4：使用优化器训练参数（Optimizer）
 def train_theta_by_optimizer(X, y):
     global m
     n_epochs = 10000
@@ -146,7 +146,7 @@ def train_theta_by_mini_batch_gd():
 
     def fetch_batch(epoch, batch_index, batch_size):
         np.random.seed(epoch * n_batches + batch_index)  # 每次生成不同的seed
-        indices = np.random.randint(m, size=batch_size)  # 随机生成长度为batch_size的小于m的整数
+        indices = np.random.randint(m, size=batch_size)  # 随机生成batch_size个小于m的整数
         X_batch = scaled_housing_data_plus_bias[indices]
         y_batch = housing.target.reshape(-1, 1)[indices]
         return X_batch, y_batch
@@ -161,7 +161,6 @@ def train_theta_by_mini_batch_gd():
                 _, loss = sess.run([training_op, mse], feed_dict={X: X_batch, y: y_batch})
             if epoch % 10 == 0:
                 print('Epoch', epoch, 'MSE =', loss)
-            # sess.run(training_op)
         best_theta = theta.eval()
         print('Best theta is', best_theta)
 train_theta_by_mini_batch_gd()
