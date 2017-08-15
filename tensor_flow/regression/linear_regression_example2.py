@@ -122,6 +122,11 @@ def train_theta_by_optimizer(X, y):
 
 # 方法5：使用小批次梯度下降(Mini-batch Gradient Descent)方法训练参数
 # 实际上是随机梯度下降法，因为每次只使用一部分数据，因此训练过程中cost不是逐渐减小，而是会出现一定的波动
+# 这里有两个很重要的概念：epoch and batch
+# - batch: 由于每次训练只取全部样本中的一部分，因此一个batch只是一小部分训练样本(batch size定义了一个batch中样本的个数)
+# - batch number: batch的个数是由样本数和batch size决定的，int(np.ceil(m / batch_size))
+# - epoch: 是指使用全部训练样本训练一次，理论上按照batch size的大小，取int(np.ceil(m / batch_size))可以取完所有的样本
+# - epoch number: 是指使用全部样本训练几次
 # 使用placeholder nodes传递数据
 def train_theta_by_mini_batch_gd():
     global m, scaled_housing_data_plus_bias, housing
