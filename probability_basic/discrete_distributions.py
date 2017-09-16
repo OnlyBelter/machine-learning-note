@@ -81,12 +81,3 @@ plt.plot(X, y_bi2)
 plt.plot(X, y_po)
 
 
-
-
-
-
-
-
-
-
-
