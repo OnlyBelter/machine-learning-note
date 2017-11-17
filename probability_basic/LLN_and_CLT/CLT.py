@@ -9,82 +9,78 @@ Created on Sun Nov 12 08:44:37 2017
 @author: Belter
 """
 
-# p = 0.999
-para = 0.4
-size = [1, 4, 20, 80, 200, 10000]
 
-
-def sampling2pmf(n, p, m=10000):
+def sampling2pmf(n, dist, m=100000):
     """
     n: sample size for each experiment
-    m: how many times do you do experiment, fix in 10000
-    p: parameter for distribution
+    m: how many times do you do experiment, fix in 100000
+    dist: frozen distribution
     """
-    ber_dist = stats.bernoulli(p)  # 定义一个伯努利分布
+    current_dist = dist
     sum_of_samples = []
     for i in range(m):
-        samples = ber_dist.rvs(size=n)
+        samples = current_dist.rvs(size=n)  # 与每次取一个值，取n次效果相同
+        # print(samples)
         sum_of_samples.append(np.sum(samples))
-    val, cnt = np.unique(sum_of_samples, return_counts=True)
-    pmf = cnt / len(sum_of_samples)
-    return val, pmf
+    # 下面计算频率的方式不适合连续型随机变量，因此直接返回随机变量的和
+    # val, cnt = np.unique(sum_of_samples, return_counts=True)
+    # pmf = cnt / len(sum_of_samples)
+    # return val, pmf
+    return sum_of_samples
+
+
+def plot(n, dist, subplot, plt_handle, dist_type):
+    """
+    :param n: sample size
+    :param dist: distribution of each single sample
+    :param subplot: location of sub-graph, such as 221, 222, 223, 224
+    :param plt_handle: plt object
+    :param dist_type: the type of distribution
+    :return: plt object
+    """
+    bins = 20000
+    plt = plt_handle
+    plt.subplot(subplot)
+    mu = n * dist.mean()
+    sigma = np.sqrt(n * dist.var())
+    samples = sampling2pmf(n=n, dist=dist)
+    # print(samples)
+    # normed参数可以对直方图进行标准化，从而使纵坐标表示概率而不是次数
+    plt.hist(samples, normed=True, bins=50, histtype='stepfilled', alpha=1)
+    plt.ylabel('Probability')
+    plt.title('Sum of {} dist. (n={})'.format(dist_type, n))
+    # normal distribution
+    norm_dis = stats.norm(mu, sigma)
+    norm_x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, bins)
+    pdf1 = norm_dis.pdf(norm_x)
+    plt.plot(norm_x, pdf1, 'r--', alpha=0.4)
+    return plt
+
+size = [1, 2, 3, 4, 8, 10]
+
+# sum of bernoulli distribution
+# dist_type = 'bern'
+# bern_para = [0.99]
+# single_sample_dist = stats.bernoulli(p=bern_para[0])  # 定义一个伯努利分布
+
+# sum of binomial distribution
+# dist_type = 'bino'
+# bino_para = [20, 0.4]
+# single_sample_dist = stats.binom(n=bino_para[0], p=bino_para[1])  # 定义一个二项分布
+
+# sum of uniform distribution
+dist_type = 'uniform'
+uniform_para = [3, 2]
+single_sample_dist = stats.uniform(loc=uniform_para[0], scale=uniform_para[1])  # 定义一个均匀分布
+
 
 # 下面是利用matplotlib画图
 plt.figure(1)
-# plot bernoulli distribution, n = 1
-plt.subplot(321)  # 两行一列，第一个子图
-sample_result = sampling2pmf(n=size[0], p=para)
-# print(sample_result)
-plt.vlines(sample_result[0], 0, sample_result[1],
-           colors='g', linestyles='-', lw=3)
-plt.ylabel('Probability')
-plt.title('PMF of bernoulli dist. (n={})'.format(size[0]))
-
-
-plt.subplot(322)
-sample_result = sampling2pmf(n=size[1], p=para)
-# print(sample_result)
-plt.vlines(sample_result[0], 0, sample_result[1],
-           colors='g', linestyles='-', lw=3)
-plt.ylabel('Probability')
-plt.title('Sum of bernoulli dist. (n={})'.format(size[1]))
-
-
-plt.subplot(323)
-sample_result = sampling2pmf(n=size[2], p=para)
-# print(sample_result)
-plt.vlines(sample_result[0], 0, sample_result[1],
-           colors='g', linestyles='-', lw=3)
-plt.ylabel('Probability')
-plt.title('Sum of bernoulli dist. (n={})'.format(size[2]))
-
-
-plt.subplot(324)
-sample_result = sampling2pmf(n=size[3], p=para)
-# print(sample_result)
-plt.vlines(sample_result[0], 0, sample_result[1],
-           colors='g', linestyles='-', lw=3)
-plt.ylabel('Probability')
-plt.title('Sum of bernoulli dist. (n={})'.format(size[3]))
-
-
-plt.subplot(325)
-sample_result = sampling2pmf(n=size[4], p=para)
-# print(sample_result)
-plt.vlines(sample_result[0], 0, sample_result[1],
-           colors='g', linestyles='-', lw=3)
-plt.ylabel('Probability')
-plt.title('Sum of bernoulli dist. (n={})'.format(size[4]))
-
-
-plt.subplot(326)
-sample_result = sampling2pmf(n=size[5], p=para)
-# print(sample_result)
-plt.vlines(sample_result[0], 0, sample_result[1],
-           colors='g', linestyles='-', lw=3)
-plt.ylabel('Probability')
-plt.title('Sum of bernoulli dist. (n={})'.format(size[5]))
-
+plt = plot(n=size[0], dist=single_sample_dist, subplot=321, plt_handle=plt, dist_type=dist_type)
+plt = plot(n=size[1], dist=single_sample_dist, subplot=322, plt_handle=plt, dist_type=dist_type)
+plt = plot(n=size[2], dist=single_sample_dist, subplot=323, plt_handle=plt, dist_type=dist_type)
+plt = plot(n=size[3], dist=single_sample_dist, subplot=324, plt_handle=plt, dist_type=dist_type)
+plt = plot(n=size[4], dist=single_sample_dist, subplot=325, plt_handle=plt, dist_type=dist_type)
+plt = plot(n=size[5], dist=single_sample_dist, subplot=326, plt_handle=plt, dist_type=dist_type)
 plt.tight_layout()
-# plt.show()
-plt.savefig('sum_of_ber_dist.png', dpi=200)
+plt.savefig('sum_of_{}_dist_2.png'.format(dist_type), dpi=200)
