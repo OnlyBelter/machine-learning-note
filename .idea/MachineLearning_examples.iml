@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/pytorch/.ipynb_checkpoints" />
     </content>
-    <orderEntry type="jdk" jdkName="torch" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="ds" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

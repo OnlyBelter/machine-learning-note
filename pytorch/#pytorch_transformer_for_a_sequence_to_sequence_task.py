@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import math
-import numpy as np
+# import numpy as np
 
 # ======================================================================================
 # 1. Positional Encoding
@@ -136,7 +136,7 @@ class Seq2SeqTransformer(nn.Module):
         tgt_emb = self.pos_encoder(tgt_emb)
 
         # 3. Pass the processed sequences through the Transformer.
-        output = self.transformer(
+        t_output = self.transformer(
             src=src_emb,
             tgt=tgt_emb,
             tgt_mask=tgt_mask,
@@ -145,7 +145,7 @@ class Seq2SeqTransformer(nn.Module):
         )
 
         # 4. Pass the output through the final linear layer to get logits.
-        return self.generator(output)
+        return self.generator(t_output)
 
 # ======================================================================================
 # 3. Data Generation and Training
@@ -173,7 +173,7 @@ def generate_data(batch_size, seq_len, vocab_size):
 
 # --- Hyperparameters ---
 VOCAB_SIZE = 20
-D_MODEL = 64
+D_MODEL = 64  # the dimension of tokens
 NHEAD = 4
 NUM_ENCODER_LAYERS = 2
 NUM_DECODER_LAYERS = 2
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     ).to(device)
 
     # Loss function and optimizer
-    #  the loss is calculated as if the target were one-hot encoded
+    #  the loss is calculated as if the target was one-hot encoded
     criterion = nn.CrossEntropyLoss(ignore_index=0) # Ignore padding token if we had one
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     for epoch in range(EPOCHS):
         model.train() # Set the model to training mode
 
-        # Generate a batch of data
+        # Generate a batch of data, source -> target_out
         src, tgt_input, tgt_out = generate_data(BATCH_SIZE, SEQ_LEN, VOCAB_SIZE)
         src, tgt_input, tgt_out = src.to(device), tgt_input.to(device), tgt_out.to(device)
 
@@ -277,6 +277,6 @@ if __name__ == "__main__":
     predicted_tgt = predict(model, test_src)
 
     print("\n--- Inference Example ---")
-    print(f"Source Sequence:      {test_src.cpu().numpy().flatten()}")
-    print(f"Expected Target:      {test_tgt_out.cpu().numpy().flatten()}")
-    print(f"Model Predicted Target: {predicted_tgt.cpu().numpy().flatten()}")
+    print(f"Source Sequence:      {test_src.cpu().tolist()}")
+    print(f"Expected Target:      {test_tgt_out.cpu().tolist()}")
+    print(f"Model Predicted Target: {predicted_tgt.cpu().tolist()}")
